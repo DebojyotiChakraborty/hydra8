@@ -30,7 +30,7 @@ class AppTheme {
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.white,
-          foregroundColor: AppColors.black,
+          foregroundColor: AppColors.buttonTextBlue,
           shape: const StadiumBorder(),
           padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 16),
           textStyle: GoogleFonts.manrope(

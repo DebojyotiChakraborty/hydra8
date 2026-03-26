@@ -18,7 +18,7 @@ class HomeScreen extends ConsumerWidget {
     final progressAsync = ref.watch(dailyProgressProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.primaryBlue,
+      backgroundColor: AppColors.scaffoldBlue,
       body: SafeArea(
         child: Column(
           children: [
@@ -26,34 +26,34 @@ class HomeScreen extends ConsumerWidget {
             // Header
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Row(
+              child: Stack(
+                alignment: Alignment.center,
                 children: [
-                  const Spacer(),
-                  Text(
-                    'Hydra8',
-                    style: GoogleFonts.manrope(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.white,
+                  Center(
+                    child: Text(
+                      'Hydra8',
+                      style: GoogleFonts.manrope(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.white,
+                      ),
                     ),
                   ),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: IconButton(
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) =>
-                                  const IntakeTargetScreen(isEditing: true),
-                            ),
-                          );
-                        },
-                        icon: Icon(
-                          MingCuteIcons.mgc_settings_3_line,
-                          color: AppColors.white,
-                          size: 24,
-                        ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: IconButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                const IntakeTargetScreen(isEditing: true),
+                          ),
+                        );
+                      },
+                      icon: Icon(
+                        MingCuteIcons.mgc_settings_3_line,
+                        color: AppColors.white,
+                        size: 24,
                       ),
                     ),
                   ),

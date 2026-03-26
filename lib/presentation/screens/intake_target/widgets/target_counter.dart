@@ -13,10 +13,10 @@ class TargetCounter extends ConsumerWidget {
     final currentTarget = settings?.dailyTargetMl ?? 2500;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
       decoration: BoxDecoration(
         color: AppColors.white.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.circular(24),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -26,12 +26,12 @@ class TargetCounter extends ConsumerWidget {
             onPressed: currentTarget > 1000
                 ? () => ref
                     .read(settingsProvider.notifier)
-                    .updateTarget(currentTarget - 250)
+                    .updateTarget(currentTarget - 100)
                 : null,
           ),
           Container(
             width: 1,
-            height: 24,
+            height: 20,
             color: AppColors.white.withValues(alpha: 0.3),
           ),
           _CounterButton(
@@ -39,7 +39,7 @@ class TargetCounter extends ConsumerWidget {
             onPressed: currentTarget < 10000
                 ? () => ref
                     .read(settingsProvider.notifier)
-                    .updateTarget(currentTarget + 250)
+                    .updateTarget(currentTarget + 100)
                 : null,
           ),
         ],
@@ -58,8 +58,8 @@ class _CounterButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton(
       onPressed: onPressed,
-      icon: Icon(icon, color: AppColors.white, size: 22),
-      constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+      icon: Icon(icon, color: AppColors.white, size: 18),
+      constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
       padding: EdgeInsets.zero,
     );
   }

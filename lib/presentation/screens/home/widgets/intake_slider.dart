@@ -14,36 +14,34 @@ class IntakeSlider extends ConsumerWidget {
 
     return Container(
       margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.fromLTRB(24, 20, 24, 16),
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
       decoration: BoxDecoration(
-        color: AppColors.cardBackgroundDark,
-        borderRadius: BorderRadius.circular(24),
+        color: AppColors.sliderAreaBackground,
+        borderRadius: BorderRadius.circular(32),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           // Amount display
           Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
             children: [
               Text(
                 '$sliderValue',
                 style: GoogleFonts.manrope(
                   fontSize: 40,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.white,
+                  color: AppColors.sliderActiveTrack,
                   height: 1.0,
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Text(
-                  'ml',
-                  style: GoogleFonts.manrope(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w400,
-                    color: AppColors.white.withValues(alpha: 0.7),
-                  ),
+              Text(
+                'ml',
+                style: GoogleFonts.manrope(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w400,
+                  color: AppColors.sliderActiveTrack,
                 ),
               ),
               const Spacer(),
@@ -84,7 +82,7 @@ class IntakeSlider extends ConsumerWidget {
               );
             }).toList(),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           // Log Intake button
           SizedBox(
             width: 200,
@@ -97,6 +95,7 @@ class IntakeSlider extends ConsumerWidget {
               child: const Text('Log Intake'),
             ),
           ),
+          const SizedBox(height: 8),
         ],
       ),
     );
@@ -150,8 +149,8 @@ class _BarSlider extends StatelessWidget {
                   height: 40 * heightFraction,
                   decoration: BoxDecoration(
                     color: isActive
-                        ? AppColors.white
-                        : AppColors.white.withValues(alpha: 0.15),
+                        ? AppColors.sliderActiveTrack
+                        : AppColors.sliderTrack,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 );

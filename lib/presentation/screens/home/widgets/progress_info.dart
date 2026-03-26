@@ -19,7 +19,7 @@ class ProgressInfo extends StatelessWidget {
         Text(
           '${formatPercentage(progress.totalConsumedMl, progress.targetMl)}%',
           style: GoogleFonts.manrope(
-            fontSize: 56,
+            fontSize: 48,
             fontWeight: FontWeight.w800,
             color: AppColors.white,
             height: 1.0,
@@ -41,7 +41,7 @@ class ProgressInfo extends StatelessWidget {
               TextSpan(
                 text: formatLiters(progress.targetMl),
                 style: GoogleFonts.manrope(
-                  fontSize: 40,
+                  fontSize: 48,
                   fontWeight: FontWeight.w800,
                   color: AppColors.white,
                 ),
@@ -67,27 +67,26 @@ class ProgressInfo extends StatelessWidget {
         ),
         const SizedBox(height: 24),
         // Consumed
-        RichText(
-          text: TextSpan(
-            children: [
-              TextSpan(
-                text: '${progress.totalConsumedMl}',
-                style: GoogleFonts.manrope(
-                  fontSize: 56,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.white,
-                  height: 1.0,
-                ),
-              ),
-              TextSpan(
-                text: 'ml',
-                style: GoogleFonts.manrope(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w400,
-                  color: AppColors.white,
-                ),
-              ),
-            ],
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerRight,
+          child: Text(
+            '${progress.totalConsumedMl}',
+            style: GoogleFonts.manrope(
+              fontSize: 96,
+              fontWeight: FontWeight.w800,
+              color: AppColors.white,
+              height: 1.0,
+            ),
+            maxLines: 1,
+          ),
+        ),
+        Text(
+          'ml',
+          style: GoogleFonts.manrope(
+            fontSize: 24,
+            fontWeight: FontWeight.w600,
+            color: AppColors.white,
           ),
         ),
         Text(

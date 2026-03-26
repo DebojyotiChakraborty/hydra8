@@ -15,7 +15,6 @@ class ReminderSection extends ConsumerWidget {
     if (settings == null) return const SizedBox.shrink();
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 24),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.white.withValues(alpha: 0.1),
@@ -30,7 +29,7 @@ class ReminderSection extends ConsumerWidget {
           Row(
             children: [
               Icon(
-                MingCuteIcons.mgc_notification_line,
+                MingCuteIcons.mgc_bell_ringing_fill,
                 color: AppColors.white,
                 size: 22,
               ),
@@ -78,7 +77,7 @@ class ReminderSection extends ConsumerWidget {
                 _buildDottedDivider(),
                 // Wake time
                 _TimeRow(
-                  icon: MingCuteIcons.mgc_run_line,
+                  icon: MingCuteIcons.mgc_run_fill,
                   value: formatTimeOfDay(
                       minutesToTimeOfDay(settings.wakeTimeMinutes)),
                   onTap: () async {
@@ -94,7 +93,7 @@ class ReminderSection extends ConsumerWidget {
                     }
                   },
                   trailing: _TimeRow(
-                    icon: MingCuteIcons.mgc_bed_line,
+                    icon: MingCuteIcons.mgc_bed_fill,
                     value: formatTimeOfDay(
                         minutesToTimeOfDay(settings.sleepTimeMinutes)),
                     onTap: () async {
@@ -116,7 +115,7 @@ class ReminderSection extends ConsumerWidget {
                 Row(
                   children: [
                     Icon(
-                      MingCuteIcons.mgc_time_line,
+                      MingCuteIcons.mgc_watch_fill,
                       color: AppColors.white,
                       size: 20,
                     ),
@@ -145,7 +144,7 @@ class ReminderSection extends ConsumerWidget {
                 Row(
                   children: [
                     Icon(
-                      MingCuteIcons.mgc_alarm_2_line,
+                      MingCuteIcons.mgc_alarm_1_fill,
                       color: AppColors.white,
                       size: 20,
                     ),
