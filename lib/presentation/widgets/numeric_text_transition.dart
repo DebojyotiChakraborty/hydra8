@@ -9,6 +9,9 @@ import 'package:flutter/material.dart';
 /// Changed digits slide out in one direction and new ones slide in from the
 /// opposite direction. The slide direction is determined by whether the value
 /// increased or decreased.
+///
+/// When the digit count changes, character slots smoothly expand or collapse
+/// so adjacent content (e.g. a "ml" suffix) slides seamlessly.
 class NumericTextTransition extends StatefulWidget {
   const NumericTextTransition({
     super.key,
@@ -32,7 +35,7 @@ class NumericTextTransition extends StatefulWidget {
   /// Animation curve.
   final Curve curve;
 
-  /// Optional prefix rendered before the number (e.g. "$").
+  /// Optional prefix rendered before the number (e.g. "\$").
   final String prefix;
 
   /// Optional suffix rendered after the number (e.g. "ml").
@@ -62,7 +65,6 @@ class _NumericTextTransitionState extends State<NumericTextTransition>
   }
 
   String _format(int value) {
-    // Simple comma formatting to match formatMl behavior
     final str = value.toString();
     final buffer = StringBuffer();
     final len = str.length;
@@ -90,6 +92,16 @@ class _NumericTextTransitionState extends State<NumericTextTransition>
     super.dispose();
   }
 
+  /// Measures the size of a single character rendered in [style].
+  Size _measureChar(String ch, TextStyle style) {
+    final tp = TextPainter(
+      text: TextSpan(text: ch, style: style),
+      textDirection: TextDirection.ltr,
+      maxLines: 1,
+    )..layout();
+    return Size(tp.width, tp.height);
+  }
+
   @override
   Widget build(BuildContext context) {
     final style = widget.style ?? DefaultTextStyle.of(context).style;
@@ -99,14 +111,10 @@ class _NumericTextTransitionState extends State<NumericTextTransition>
       builder: (context, _) {
         final progress = _animation.value;
 
-        // Pad the shorter string on the left so digit positions align from the
-        // right (ones, tens, hundreds, …).
-        final maxLen =
-            _oldText.length > _newText.length
-                ? _oldText.length
-                : _newText.length;
-        final oldPadded = _oldText.padLeft(maxLen);
-        final newPadded = _newText.padLeft(maxLen);
+        // Align characters from the right so ones/tens/hundreds match up.
+        final oldLen = _oldText.length;
+        final newLen = _newText.length;
+        final maxLen = oldLen > newLen ? oldLen : newLen;
 
         final children = <Widget>[];
 
@@ -116,29 +124,25 @@ class _NumericTextTransitionState extends State<NumericTextTransition>
         }
 
         for (int i = 0; i < maxLen; i++) {
-          final oldChar = oldPadded[i];
-          final newChar = newPadded[i];
+          // Index into old/new strings, aligned from the right.
+          final oldIdx = i - (maxLen - oldLen);
+          final newIdx = i - (maxLen - newLen);
+          final oldChar = oldIdx >= 0 ? _oldText[oldIdx] : null;
+          final newChar = newIdx >= 0 ? _newText[newIdx] : null;
 
-          if (oldChar == newChar) {
-            // Unchanged digit — render static.
-            // Skip leading padding spaces that appear when lengths differ.
-            if (oldChar == ' ' && progress >= 1.0) continue;
-            if (oldChar == ' ') {
-              // Fading out leading space
-              children.add(
-                _buildStaticChar(oldChar, style, 1.0 - progress),
-              );
-            } else {
-              children.add(Text(oldChar, style: style));
-            }
+          if (oldChar == null && newChar != null) {
+            // Character only in new text — appearing.
+            children.add(_buildAppearingChar(newChar, progress, style));
+          } else if (oldChar != null && newChar == null) {
+            // Character only in old text — disappearing.
+            children.add(_buildDisappearingChar(oldChar, progress, style));
+          } else if (oldChar == newChar) {
+            // Same character — static.
+            children.add(Text(oldChar!, style: style));
           } else {
+            // Different character — animated swap.
             children.add(
-              _buildAnimatedDigit(
-                oldChar,
-                newChar,
-                progress,
-                style,
-              ),
+              _buildAnimatedDigit(oldChar!, newChar!, progress, style),
             );
           }
         }
@@ -158,10 +162,71 @@ class _NumericTextTransitionState extends State<NumericTextTransition>
     );
   }
 
-  Widget _buildStaticChar(String char, TextStyle style, double opacity) {
-    return Opacity(
-      opacity: opacity.clamp(0.0, 1.0),
-      child: Text(char, style: style),
+  /// A character slot expanding from zero width, with fade + slide in.
+  Widget _buildAppearingChar(String char, double progress, TextStyle style) {
+    final charSize = _measureChar(char, style);
+    final fontSize = style.fontSize ?? 16.0;
+    final slideDistance = fontSize * 0.6;
+    final direction = _isIncreasing ? -1.0 : 1.0;
+
+    return ClipRect(
+      child: SizedBox(
+        width: charSize.width * progress,
+        height: charSize.height,
+        child: OverflowBox(
+          maxWidth: charSize.width,
+          maxHeight: charSize.height,
+          alignment: Alignment.centerRight,
+          child: Transform.translate(
+            offset: Offset(0, -direction * slideDistance * (1.0 - progress)),
+            child: Opacity(
+              opacity: progress.clamp(0.0, 1.0),
+              child: ImageFiltered(
+                imageFilter: ImageFilter.blur(
+                  sigmaX: 10.0 * (1.0 - progress),
+                  sigmaY: 10.0 * (1.0 - progress),
+                  tileMode: TileMode.decal,
+                ),
+                child: Text(char, style: style),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// A character slot collapsing to zero width, with fade + slide out.
+  Widget _buildDisappearingChar(String char, double progress, TextStyle style) {
+    final charSize = _measureChar(char, style);
+    final fontSize = style.fontSize ?? 16.0;
+    final slideDistance = fontSize * 0.6;
+    final direction = _isIncreasing ? -1.0 : 1.0;
+
+    return ClipRect(
+      child: SizedBox(
+        width: charSize.width * (1.0 - progress),
+        height: charSize.height,
+        child: OverflowBox(
+          maxWidth: charSize.width,
+          maxHeight: charSize.height,
+          alignment: Alignment.centerRight,
+          child: Transform.translate(
+            offset: Offset(0, direction * slideDistance * progress),
+            child: Opacity(
+              opacity: (1.0 - progress).clamp(0.0, 1.0),
+              child: ImageFiltered(
+                imageFilter: ImageFilter.blur(
+                  sigmaX: 10.0 * progress,
+                  sigmaY: 10.0 * progress,
+                  tileMode: TileMode.decal,
+                ),
+                child: Text(char, style: style),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -171,7 +236,6 @@ class _NumericTextTransitionState extends State<NumericTextTransition>
     double progress,
     TextStyle style,
   ) {
-    // The height of one digit, used for the slide distance.
     final fontSize = style.fontSize ?? 16.0;
     final slideDistance = fontSize * 0.6;
     final direction = _isIncreasing ? -1.0 : 1.0;
@@ -186,16 +250,13 @@ class _NumericTextTransitionState extends State<NumericTextTransition>
     final newSlide = -direction * slideDistance * (1.0 - progress);
     final newBlur = 10.0 * (1.0 - progress);
 
-    // Use a stack to overlay old and new digits in the same space.
-    // We need a fixed-width container so digits don't jump.
     return _FixedWidthChar(
       style: style,
       child: Stack(
         alignment: Alignment.center,
         clipBehavior: Clip.none,
         children: [
-          // Old character sliding out
-          if (oldOpacity > 0.0 && oldChar != ' ')
+          if (oldOpacity > 0.0)
             Transform.translate(
               offset: Offset(0, oldSlide),
               child: Opacity(
@@ -210,8 +271,7 @@ class _NumericTextTransitionState extends State<NumericTextTransition>
                 ),
               ),
             ),
-          // New character sliding in
-          if (newOpacity > 0.0 && newChar != ' ')
+          if (newOpacity > 0.0)
             Transform.translate(
               offset: Offset(0, newSlide),
               child: Opacity(
@@ -242,8 +302,6 @@ class _FixedWidthChar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Measure the widest digit to keep consistent sizing.
-    // '0' is typically the widest in most fonts but we check a few.
     double maxWidth = 0;
     double maxHeight = 0;
     for (final ch in ['0', '8', ',']) {
@@ -256,10 +314,6 @@ class _FixedWidthChar extends StatelessWidget {
       if (tp.height > maxHeight) maxHeight = tp.height;
     }
 
-    return SizedBox(
-      width: maxWidth,
-      height: maxHeight,
-      child: child,
-    );
+    return SizedBox(width: maxWidth, height: maxHeight, child: child);
   }
 }
