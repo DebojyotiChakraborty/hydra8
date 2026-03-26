@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/utils/formatters.dart';
 import '../../providers/settings_provider.dart';
+import '../../widgets/numeric_text_transition.dart';
 import '../home/home_screen.dart';
 import 'widgets/target_counter.dart';
 import 'widgets/reminder_section.dart';
@@ -88,8 +88,8 @@ class IntakeTargetScreen extends ConsumerWidget {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Text(
-                              formatMl(targetMl),
+                            NumericTextTransition(
+                              value: targetMl,
                               style: GoogleFonts.manrope(
                                 fontSize: 48,
                                 fontWeight: FontWeight.w800,

@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../providers/water_intake_provider.dart';
+import '../../../widgets/numeric_text_transition.dart';
 
 class IntakeSlider extends ConsumerWidget {
   const IntakeSlider({super.key});
@@ -27,8 +28,9 @@ class IntakeSlider extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
             children: [
-              Text(
-                '$sliderValue',
+              NumericTextTransition(
+                value: sliderValue,
+                duration: const Duration(milliseconds: 200),
                 style: GoogleFonts.manrope(
                   fontSize: 40,
                   fontWeight: FontWeight.w700,
