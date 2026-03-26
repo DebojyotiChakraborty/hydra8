@@ -5,6 +5,7 @@ import 'package:ming_cute_icons/ming_cute_icons.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../providers/settings_provider.dart';
 import '../../widgets/numeric_text_transition.dart';
+import '../../widgets/bouncy_button.dart';
 import '../home/home_screen.dart';
 import 'widgets/target_counter.dart';
 import 'widgets/reminder_section.dart';
@@ -131,7 +132,8 @@ class IntakeTargetScreen extends ConsumerWidget {
                 child: Center(
                   child: SizedBox(
                     width: 200,
-                    child: ElevatedButton(
+                    child: BouncyButton(
+                      label: 'Done',
                       onPressed: () async {
                         if (!isEditing) {
                           await ref
@@ -148,7 +150,6 @@ class IntakeTargetScreen extends ConsumerWidget {
                           Navigator.of(context).pop();
                         }
                       },
-                      child: const Text('Done'),
                     ),
                   ),
                 ),

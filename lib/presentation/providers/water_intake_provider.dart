@@ -6,6 +6,16 @@ import 'settings_provider.dart';
 
 const _uuid = Uuid();
 
+const bottleAssets = [
+  'assets/images/bottle-asset-1.png',
+  'assets/images/bottle-asset-2.png',
+  'assets/images/bottle-asset-3.png',
+  'assets/images/bottle-asset-4.png',
+  'assets/images/bottle-asset-5.png',
+];
+
+final selectedBottleIndexProvider = StateProvider<int>((ref) => 0);
+
 final intakeSliderProvider = StateProvider<int>((ref) => 250);
 
 final dailyProgressProvider =

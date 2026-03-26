@@ -21,6 +21,7 @@ class NumericTextTransition extends StatefulWidget {
     this.curve = Curves.easeOutCubic,
     this.prefix = '',
     this.suffix = '',
+    this.formatter,
   });
 
   /// The numeric value to display.
@@ -40,6 +41,10 @@ class NumericTextTransition extends StatefulWidget {
 
   /// Optional suffix rendered after the number (e.g. "ml").
   final String suffix;
+
+  /// Optional custom formatter. When provided, this is used instead of the
+  /// default comma-separated formatting.
+  final String Function(int)? formatter;
 
   @override
   State<NumericTextTransition> createState() => _NumericTextTransitionState();
@@ -65,6 +70,7 @@ class _NumericTextTransitionState extends State<NumericTextTransition>
   }
 
   String _format(int value) {
+    if (widget.formatter != null) return widget.formatter!(value);
     final str = value.toString();
     final buffer = StringBuffer();
     final len = str.length;

@@ -37,6 +37,8 @@ dependencies:
   ming_cute_icons: ^0.0.2
   intl: ^0.19.0
   uuid: ^4.5.1
+  motor: ^1.1.0
+  audioplayers: ^6.6.0
 
 dev_dependencies:
   flutter_test:
@@ -56,10 +58,13 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
-  # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  assets:
+    - assets/images/bottle-asset-1.png
+    - assets/images/bottle-asset-2.png
+    - assets/images/bottle-asset-3.png
+    - assets/images/bottle-asset-4.png
+    - assets/images/bottle-asset-5.png
+    - assets/audio/pouring.mp3
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

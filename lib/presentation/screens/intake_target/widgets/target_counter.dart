@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 import '../../../../core/constants/app_colors.dart';
@@ -24,9 +25,12 @@ class TargetCounter extends ConsumerWidget {
           _CounterButton(
             icon: MingCuteIcons.mgc_minimize_line,
             onPressed: currentTarget > 1000
-                ? () => ref
-                    .read(settingsProvider.notifier)
-                    .updateTarget(currentTarget - 100)
+                ? () {
+                    HapticFeedback.selectionClick();
+                    ref
+                        .read(settingsProvider.notifier)
+                        .updateTarget(currentTarget - 100);
+                  }
                 : null,
           ),
           Container(
@@ -37,9 +41,12 @@ class TargetCounter extends ConsumerWidget {
           _CounterButton(
             icon: MingCuteIcons.mgc_add_line,
             onPressed: currentTarget < 10000
-                ? () => ref
-                    .read(settingsProvider.notifier)
-                    .updateTarget(currentTarget + 100)
+                ? () {
+                    HapticFeedback.selectionClick();
+                    ref
+                        .read(settingsProvider.notifier)
+                        .updateTarget(currentTarget + 100);
+                  }
                 : null,
           ),
         ],

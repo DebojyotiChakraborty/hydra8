@@ -72,7 +72,7 @@ class HomeScreen extends ConsumerWidget {
                     style: GoogleFonts.manrope(color: AppColors.white),
                   ),
                 ),
-                data: (progress) => _buildContent(progress),
+                data: (progress) => _buildContent(progress, ref),
               ),
             ),
           ],
@@ -81,9 +81,11 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildContent(DailyProgress progress) {
+  Widget _buildContent(DailyProgress progress, WidgetRef ref) {
     // Fill level: starts full (1.0), decreases as user drinks
     final fillLevel = 1.0 - progress.percentage;
+    final bottleIndex = ref.watch(selectedBottleIndexProvider);
+    final bottleAsset = bottleAssets[bottleIndex];
 
     return Column(
       children: [
@@ -97,7 +99,10 @@ class HomeScreen extends ConsumerWidget {
                 Expanded(
                   flex: 4,
                   child: Center(
-                    child: WaterBottle(fillLevel: fillLevel),
+                    child: WaterBottle(
+                      fillLevel: fillLevel,
+                      assetPath: bottleAsset,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8),

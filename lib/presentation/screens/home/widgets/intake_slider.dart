@@ -1,13 +1,97 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../providers/water_intake_provider.dart';
+import '../../../widgets/bouncy_button.dart';
 import '../../../widgets/numeric_text_transition.dart';
+
+final _pouringPlayer = AudioPlayer();
 
 class IntakeSlider extends ConsumerWidget {
   const IntakeSlider({super.key});
+
+  void _showBottlePicker(BuildContext context, WidgetRef ref) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.sliderAreaBackground,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => Consumer(
+        builder: (context, ref, child) {
+          final selectedIndex = ref.watch(selectedBottleIndexProvider);
+          return Padding(
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppColors.white.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Choose Bottle Style',
+                  style: GoogleFonts.manrope(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.white,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  height: 140,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: List.generate(bottleAssets.length, (index) {
+                      final isSelected = index == selectedIndex;
+                      return GestureDetector(
+                        onTap: () {
+                          ref
+                              .read(selectedBottleIndexProvider.notifier)
+                              .state = index;
+                          Navigator.of(context).pop();
+                        },
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: isSelected
+                                  ? AppColors.sliderActiveTrack
+                                  : Colors.transparent,
+                              width: 2,
+                            ),
+                            color: isSelected
+                                ? AppColors.white.withValues(alpha: 0.1)
+                                : Colors.transparent,
+                          ),
+                          child: Image.asset(
+                            bottleAssets[index],
+                            height: 100,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      );
+                    }),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -47,16 +131,19 @@ class IntakeSlider extends ConsumerWidget {
                 ),
               ),
               const Spacer(),
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: AppColors.white.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(
-                  MingCuteIcons.mgc_glass_cup_fill,
-                  color: AppColors.white,
-                  size: 20,
+              GestureDetector(
+                onTap: () => _showBottlePicker(context, ref),
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.white.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(
+                    MingCuteIcons.mgc_glass_cup_fill,
+                    color: AppColors.white,
+                    size: 20,
+                  ),
                 ),
               ),
             ],
@@ -88,13 +175,15 @@ class IntakeSlider extends ConsumerWidget {
           // Log Intake button
           SizedBox(
             width: 200,
-            child: ElevatedButton(
+            child: BouncyButton(
+              label: 'Log Intake',
               onPressed: () {
+                _pouringPlayer.stop();
+                _pouringPlayer.play(AssetSource('audio/pouring.mp3'));
                 ref
                     .read(dailyProgressProvider.notifier)
                     .logIntake(sliderValue);
               },
-              child: const Text('Log Intake'),
             ),
           ),
           const SizedBox(height: 8),
@@ -124,14 +213,22 @@ class _BarSlider extends StatelessWidget {
             final newValue = (50 + (fraction * 950)).round();
             // Snap to nearest 50
             final snapped = (newValue / 50).round() * 50;
-            onChanged(snapped.clamp(50, 1000));
+            final clamped = snapped.clamp(50, 1000);
+            if (clamped != value) {
+              HapticFeedback.selectionClick();
+              onChanged(clamped);
+            }
           },
           onTapDown: (details) {
             final fraction = (details.localPosition.dx / constraints.maxWidth)
                 .clamp(0.0, 1.0);
             final newValue = (50 + (fraction * 950)).round();
             final snapped = (newValue / 50).round() * 50;
-            onChanged(snapped.clamp(50, 1000));
+            final clamped = snapped.clamp(50, 1000);
+            if (clamped != value) {
+              HapticFeedback.selectionClick();
+            }
+            onChanged(clamped);
           },
           child: SizedBox(
             height: 40,

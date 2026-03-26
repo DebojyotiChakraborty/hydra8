@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../../domain/entities/daily_progress.dart';
+import '../../../widgets/numeric_text_transition.dart';
 
 class ProgressInfo extends StatelessWidget {
   final DailyProgress progress;
@@ -11,13 +12,18 @@ class ProgressInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final percentage = progress.targetMl == 0
+        ? 0
+        : ((progress.totalConsumedMl / progress.targetMl) * 100).round();
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         // Percentage
-        Text(
-          '${formatPercentage(progress.totalConsumedMl, progress.targetMl)}%',
+        NumericTextTransition(
+          value: percentage,
+          suffix: '%',
           style: GoogleFonts.manrope(
             fontSize: 48,
             fontWeight: FontWeight.w800,
@@ -35,27 +41,29 @@ class ProgressInfo extends StatelessWidget {
         ),
         const SizedBox(height: 24),
         // Goal
-        RichText(
-          text: TextSpan(
-            children: [
-              TextSpan(
-                text: formatLiters(progress.targetMl),
-                style: GoogleFonts.manrope(
-                  fontSize: 48,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.white,
-                ),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
+          children: [
+            NumericTextTransition(
+              value: progress.targetMl,
+              formatter: formatLiters,
+              style: GoogleFonts.manrope(
+                fontSize: 48,
+                fontWeight: FontWeight.w800,
+                color: AppColors.white,
               ),
-              TextSpan(
-                text: 'L',
-                style: GoogleFonts.manrope(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w400,
-                  color: AppColors.white,
-                ),
+            ),
+            Text(
+              'L',
+              style: GoogleFonts.manrope(
+                fontSize: 20,
+                fontWeight: FontWeight.w400,
+                color: AppColors.white,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
         Text(
           'Goal',
@@ -70,15 +78,14 @@ class ProgressInfo extends StatelessWidget {
         FittedBox(
           fit: BoxFit.scaleDown,
           alignment: Alignment.centerRight,
-          child: Text(
-            '${progress.totalConsumedMl}',
+          child: NumericTextTransition(
+            value: progress.totalConsumedMl,
             style: GoogleFonts.manrope(
               fontSize: 96,
               fontWeight: FontWeight.w800,
               color: AppColors.white,
               height: 1.0,
             ),
-            maxLines: 1,
           ),
         ),
         Text(
